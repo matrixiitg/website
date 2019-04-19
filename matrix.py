@@ -11,7 +11,8 @@ from pymongo import MongoClient
 app = Flask(__name__)
 oauth = OAuth(app)
 app.secret_key = urandom(24)
-
+connection = MongoClient()
+db = connection['matrix']
 #
 # LINKEDIN_ID = env(['CLIENT_ID_LINKEDIN'])
 # LINKEDIN_SECRET = env(['CLIENT_SECRET_LINKEDIN'])
@@ -76,7 +77,7 @@ def callback_handling():
 
 @app.route('/login')
 def login():
-    return auth0.authorize_redirect(redirect_uri=CALLBACK_URL, audience='https://matrix-iitg.auth0.com/userinfo')
+    return auth0.authorize_redirect(redirect_uri="http://127.0.0.1:5000/callback/", audience='https://matrix-iitg.auth0.com/userinfo')
 
 
 def requires_auth(f):
@@ -107,18 +108,28 @@ def logout():
     return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
 
 
-@app.route('/yearbook/<batch>')
-@requires_auth
+@app.route('/yearbook/<batch>/')
 def yearbook(batch):
-    yb_db = mongo_client['yearbook']
-    testimonial_db = mongo_client['testimonials']
-    students = yb_db.find({"batch": batch})
+    yearbook = db.yearbook
+    # yb_db = mongo_client['matrix']['yearbook']
+    # testimonial_db = mongo_client['matrix']['testimonials']
+    students = yearbook.find({"batch":int(batch)})
+    #print(list(students))
     testimonials = {}
-    for student in students:
-        testimonials[student['roll_no']] = []
-        for testimonial_id in student['testimonial_ids']:
-            testimonials[student['roll_no']] = testimonial_db.find(testimonial_id)
+    # for student in students:
+    #     testimonials[student['roll_no']] = []
+    #     for testimonial_id in student['testimonial_ids']:
+    #         testimonials[student['roll_no']] = testimonial_db.find(testimonial_id)
+
+    #Random Number generation
+
+
     return render_template('yearbook.html', students = students, testimonials = testimonials)
+
+@app.route('/testimonials/<roll_no>')
+@requires_auth
+def testimonials(roll_no):
+    pass
 
 
 # @app.route('/add_testimonial', method=['GET', 'POST'])
@@ -158,4 +169,4 @@ def yearbook(batch):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug = True)
