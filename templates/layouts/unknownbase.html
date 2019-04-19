@@ -109,7 +109,7 @@
 
   
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg bg-primary fixed-top navbar-transparent " color-on-scroll="400">
+    <nav class="navbar navbar-expand-lg bg-primary fixed-top navbar-transparent ">
         <div class="container">
             <div class="navbar-translate">
                 <a class="navbar-brand" href="/" data-placement="bottom">
@@ -144,9 +144,16 @@
                         </a>
                     </li>
                         <li class="nav-item">
-                        <a class="nav-link" style="text-decoration: none" href="">
+                            {% if not session.logged_in %}
+                        <a class="nav-link" style="text-decoration: none" href="login">
                             <i class="icon now-ui-icons fa-lock"></i>
                             <p>Login</p>
+                        </a>
+                            {% else %}
+                         <a class="nav-link" style="text-decoration: none" href="logout">
+                            <i class="icon now-ui-icons fa-lock-open"></i>
+                            <p>Logout</p>
+                             {% endif %}
                         </a>
                     </li>
 
