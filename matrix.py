@@ -114,68 +114,84 @@ def logout():
 
 @app.route('/yearbook/<batch>/')
 def yearbook_url(batch):
-    # yb_db = mongo_client['matrix']['yearbook']
-    # testimonial_db = mongo_client['matrix']['testimonials']
-    print("yo")
-    students = yearbook.find({"batch": int(batch)})
-    #print(list(students))
-    testimonials = {}
-    # for student in students:
-    #     testimonials[student['roll_no']] = []
-    #     for testimonial_id in student['testimonial_ids']:
-    #         testimonials[student['roll_no']] = testimonial_db.find(testimonial_id)
-    # Random Number generation
-
-
-    return render_template('yearbook.html', students=students, testimonials=testimonials)
+    if batch_validation(batch):
+        students = yearbook.find({"batch": int(batch)})
+        return render_template('yearbook.html', students=students)
+    else:
+        pass #error page
 
 
 @app.route('/testimonials/<roll_no>')
 def testimonials(roll_no):
     #fetch testimonials
-    student = yearbook.find_one({"roll_no": int(roll_no)})
-    testimonial_array = []
-    for id in student['testimonials']:
-        result = testimonials.find_one({'id':id})
-        with open('markdowns/' + str(id) + '.md', 'r') as y:
-            testimonial_array.append({
-                "author_name": result['author_name'],
-                "author_id": result['author_id'],
-                "markdown": y.read()
-            })
-    return render_template('testimonials.html', testimonies = testimonial_array)
-
+    if roll_no_validation(roll_no):
+        student = yearbook.find_one({"roll_no": int(roll_no)})
+        testimonial_array = []
+        for id in student['testimonials']:
+            result = testimonials.find_one({'id':id})
+            with open('markdowns/' + str(id) + '.md', 'r') as y:
+                testimonial_array.append({
+                    "author_name": result['author_name'],
+                    "author_id": result['author_id'],
+                    "markdown": y.read()
+                })
+        return render_template('testimonials.html', testimonies = testimonial_array)
+    else:
+        pass #error page
 
 @app.route('/add_testimonial/<roll_no>', methods=['GET', 'POST'])
 def add_testimonial(roll_no):
     # print(request.form['text'])
-    if request.method == 'GET':
-        return render_template('add_testimonials.html', roll_no=roll_no)
-    # rollno validate karna hai
+    if roll_no_validation(roll_no):
+        if request.method == 'GET':
+            return render_template('add_testimonials.html', roll_no = roll_no)
+        # rollno validate karna hai
+        else:
+            # open total_count
+            with open('markdowns/total_count', 'r') as f:
+                count = f.read()
+                count = int(count)
+            id = count + 1
+            with open('markdowns/' + str(id) + '.md', 'w') as g:
+                g.write(request.form['text'])
+            with open('markdowns/total_count', 'w') as f:
+                f.write(str(id + 1))
+
+            testimonials.insert_one({
+                "id": id,
+                "roll_no": roll_no,
+                "author_id": session['profile']['user_id'],
+                "author_name": session['profile']['name'],
+            })
+
+            yearbook.update_one({"roll_no": roll_no},{'$push': { 'testimonials': id }})
+
+            return redirect(url_for('testimonials',roll_no=roll_no))
     else:
-        # open total_count
-        with open('markdowns/total_count', 'r') as f:
-            count = f.read()
-            count = int(count)
-        id = count + 1
-        with open('markdowns/' + str(id) + '.md', 'w') as g:
-            g.write(request.form['text'])
-        with open('markdowns/total_count', 'w') as f:
-            f.write(str(id + 1))
+        pass #error page
+def roll_no_validation(roll_no):
+    #check if roll no is an integer
+    try:
+        roll_no = int(roll_no)
+    except:
+        pass #invalid roll no
 
-        testimonials.insert_one({
-            "id": id,
-            "roll_no": roll_no,
-            "author_id": session['profile']['user_id'],
-            "author_name": session['profile']['name'],
-        })
+    if yearbook.find({'roll_no':roll_no}).size() != 0:
+        return True
+    else:
+        return False
 
-        yearbook.update_one({"roll_no": roll_no},{'$push': { 'testimonials': id }})
+def batch_validation(batch):
+    # check if roll no is an integer
+    try:
+        batch = int(batch)
+    except:
+        pass  # invalid roll no
 
-        return redirect(url_for('testimonials',roll_no=roll_no))
-
-
-
+    if yearbook.find({'batch': batch}).size() != 0:
+        return True
+    else:
+        return False
         # write a new file with request.form['text']
         # database mein iska relative address daaldenge
         # jis bande ka daala h uske testimonials pe chale jao
