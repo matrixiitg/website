@@ -7,14 +7,18 @@ from flask import Flask, jsonify, redirect, render_template, session, url_for, r
 from authlib.flask.client import OAuth
 from six.moves.urllib.parse import urlencode
 from pymongo import MongoClient
+from datetime import datetime
 
 app = Flask(__name__)
 oauth = OAuth(app)
 app.secret_key = urandom(24)
+
+# DB Connections
 connection = MongoClient()
 db = connection['matrix']
 yearbook = db.yearbook
 testimonials = db.testimonials
+profiles = db.profiles
 #
 # LINKEDIN_ID = env(['CLIENT_ID_LINKEDIN'])
 # LINKEDIN_SECRET = env(['CLIENT_SECRET_LINKEDIN'])
@@ -39,7 +43,15 @@ auth0 = oauth.register(
 
 
 # Connect to mongoDB
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'profile' not in session:
+            # Redirect to Login page here
+            return redirect('/')
+        return f(*args, **kwargs)
 
+    return decorated
 
 
 @app.route('/')
@@ -47,14 +59,27 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/dimension')
+@app.route('/dimension/')
 def dimension():
     return render_template('dimension.html')
 
 
-@app.route('/team')
+@app.route('/team/')
 def team():
     return render_template('team.html')
+
+
+@app.route('/verify/', methods=['GET', 'POST'])
+def verification():
+    if request.method == 'GET':
+        user_id = session['profile']['user_id']
+        if profiles.count_documents({'user_id': user_id}):
+            redirect(url_for('dashboard'))
+        else:
+            return render_template('verification.html')
+    else:
+        # Validate the request parameters and then send to team for review
+        pass
 
 
 @app.route('/callback/')
@@ -75,24 +100,14 @@ def callback_handling():
         'name': userinfo['name'],
         'picture': userinfo['picture']
     }
-    return redirect('/dashboard')
+
+    return redirect(url_for('verification'))
 
 
 @app.route('/login')
 def login():
     return auth0.authorize_redirect(redirect_uri="http://127.0.0.1:5000/callback/",
                                     audience='https://matrix-iitg.auth0.com/userinfo')
-
-
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if 'profile' not in session:
-            # Redirect to Login page here
-            return redirect('/')
-        return f(*args, **kwargs)
-
-    return decorated
 
 
 @app.route('/dashboard')
@@ -118,33 +133,35 @@ def yearbook_url(batch):
         students = yearbook.find({"batch": int(batch)})
         return render_template('yearbook.html', students=students)
     else:
-        pass #error page
+        pass  # error page
 
 
 @app.route('/testimonials/<roll_no>')
 def testimonials(roll_no):
-    #fetch testimonials
+    # fetch testimonials
     if roll_no_validation(roll_no):
         student = yearbook.find_one({"roll_no": int(roll_no)})
         testimonial_array = []
         for id in student['testimonials']:
-            result = testimonials.find_one({'id':id})
+            result = testimonials.find_one({'id': id})
             with open('markdowns/' + str(id) + '.md', 'r') as y:
                 testimonial_array.append({
                     "author_name": result['author_name'],
                     "author_id": result['author_id'],
-                    "markdown": y.read()
+                    "markdown": y.read(),
+                    "date":result['datetime']
                 })
-        return render_template('testimonials.html', testimonies = testimonial_array)
+        return render_template('testimonials.html', testimonies=testimonial_array, student=student)
     else:
-        pass #error page
+        pass  # error page
+
 
 @app.route('/add_testimonial/<roll_no>', methods=['GET', 'POST'])
 def add_testimonial(roll_no):
     # print(request.form['text'])
     if roll_no_validation(roll_no):
         if request.method == 'GET':
-            return render_template('add_testimonials.html', roll_no = roll_no)
+            return render_template('add_testimonials.html', roll_no=roll_no)
         # rollno validate karna hai
         else:
             # open total_count
@@ -162,24 +179,28 @@ def add_testimonial(roll_no):
                 "roll_no": roll_no,
                 "author_id": session['profile']['user_id'],
                 "author_name": session['profile']['name'],
+                "datetime": datetime.now()
             })
 
-            yearbook.update_one({"roll_no": roll_no},{'$push': { 'testimonials': id }})
+            yearbook.update_one({"roll_no": roll_no}, {'$push': {'testimonials': id}})
 
-            return redirect(url_for('testimonials',roll_no=roll_no))
+            return redirect(url_for('testimonials', roll_no=roll_no))
     else:
-        pass #error page
+        pass  # error page
+
+
 def roll_no_validation(roll_no):
-    #check if roll no is an integer
+    # check if roll no is an integer
     try:
         roll_no = int(roll_no)
     except:
-        pass #invalid roll no
+        pass  # invalid roll no
 
-    if yearbook.find({'roll_no':roll_no}).size() != 0:
+    if yearbook.find({'roll_no': roll_no}).size() != 0:
         return True
     else:
         return False
+
 
 def batch_validation(batch):
     # check if roll no is an integer
@@ -192,43 +213,8 @@ def batch_validation(batch):
         return True
     else:
         return False
-        # write a new file with request.form['text']
-        # database mein iska relative address daaldenge
-        # jis bande ka daala h uske testimonials pe chale jao
-
-    # @app.route('/add_testimonial', method=['GET', 'POST'])
-    # @requires_auth
-    # def add_testimonial():
-    #     if request.method == 'POST':
-    #
-    #     else:
-    #         return render_template('add_testimonial.html', req = request)
 
 
-    # @app.route('/auth/linkedin/callback')
-    # def auth(response, status, headers):
-    #     #verify csrf - headers['state']
-    #     if headers['code']:
-    #         #continue auth
-    #
-    #         url = "https://www.linkedin.com/oauth/v2/access_token"
-    #
-    #         querystring = {"grant_type": "authorization_code", "code": headers['code'], "redirect_uri": "",
-    #                        "client_id": CLIENT_ID, "client_secret": CLIENT_SECRET}
-    #
-    #         headers = {
-    #             'content-type': "application/x-www-form-urlencoded",
-    #             'cache-control': "no-cache",
-    #             'postman-token': "28b4a0cc-2822-ae4e-7ed5-5968810b8894"
-    #         }
-    #
-    #         response = requests.request("POST", url, headers=headers, params=querystring) #json contains access_token expires_in
-    #         json
-    #
-    #     else:
-    #         #error page
-    #         error = headers['error'] # Either 'user_cancelled_login' or 'user_cancelled_authorize'
-    #         desc = headers['error_description']
 
 
 
