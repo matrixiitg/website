@@ -15,7 +15,7 @@
         <div class="container">
             <h1>Bootstrap Markdown Editor</h1>
 
-            <form id="form" action="{{   url_for('add_testimonial') }}" method = "post">
+            <form id="form" action="/add_testimonial/{{ roll_no }}/" method = "post">
                 <textarea name="text" id="editor"># Header Level 1
 
 **Pellentesque habitant morbi tristique** senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. _Aenean ultricies mi vitae est_. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, `commodo vitae`, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum  rutrum orci, sagittis tempus lacus enim ac dui. [Donec non enim](#) in turpis pulvinar facilisis. Ut felis.
@@ -38,7 +38,6 @@
   display: block;
   width: 300px;
   height: 80px;
-}
 ```
                 </textarea>
                 <input type = "submit"/>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
-<title>W3.CSS Template</title>
+<title>{{ student['name'] }}- Yearbook Testimonials</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
     body, h1, h2, h3, h4, h5 {
         font-family: "Raleway", sans-serif
@@ -40,6 +41,15 @@ and is wrapped around the whole page content, except for the footer in this exam
             </div>
             <hr>
             {% endfor %}
+        <a href="/add_testimonial/{{ student['roll_no'] }}"><div class="w3-card-4 w3-margin w3-white">
+                <div class="w3-container">
+                    <center><i class="fa fa-plus-circle fa-5x w3-center" aria-hidden="true"></i></center>
+
+                </div>
+{#                <div class="w3-container">#}
+{#                    <h5>{{ testimony['author_name'] }} <span class="w3-opacity">{{ testimony['date'] }}</span></h5>#}
+{#                </div>#}
+        </div></a>
             <!-- END BLOG ENTRIES -->
         </div>
 
