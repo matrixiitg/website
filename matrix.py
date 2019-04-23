@@ -5,14 +5,17 @@ from flask_misaka import Misaka
 from werkzeug.exceptions import HTTPException
 from functools import wraps
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, jsonify, redirect, render_template, session, url_for, request
+from flask import Flask, jsonify, redirect, render_template, session, url_for, request, flash, abort
 from authlib.flask.client import OAuth
 from six.moves.urllib.parse import urlencode
 from pymongo import MongoClient
 from datetime import datetime
+from flaskext.markdown import Markdown
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
-Misaka(app)
+# Misaka(app)
+Markdown(app)
 oauth = OAuth(app)
 app.secret_key = urandom(24)
 
@@ -51,6 +54,7 @@ def requires_auth(f):
     def decorated(*args, **kwargs):
         if 'profile' not in session:
             # Redirect to Login page here
+            flash('You need to be logged in before accessing this page.')
             return redirect('/')
         return f(*args, **kwargs)
 
@@ -82,7 +86,13 @@ def verification():
             return render_template('verification.html')
     else:
         # Validate the request parameters and then send to team for review
+        # Validation of roll_no regex match | Batch year
         pass
+
+
+@app.route('/update_profile/', methods=['GET', 'POST'])
+def update_profile():
+    pass
 
 
 @app.route('/callback/')
@@ -91,10 +101,6 @@ def callback_handling():
     auth0.authorize_access_token()
     resp = auth0.get('userinfo')
     userinfo = resp.json()
-
-    # Check if user is legit
-    # maybe ask them their roll no
-
 
     # Store the user information in flask session.
     session['jwt_payload'] = userinfo
@@ -113,7 +119,7 @@ def login():
                                     audience='https://matrix-iitg.auth0.com/userinfo')
 
 
-@app.route('/dashboard')
+@app.route('/dashboard/')
 @requires_auth
 def dashboard():
     return render_template('dashboard.html',
@@ -136,8 +142,7 @@ def yearbook_url(batch):
         students = yearbook.find({"batch": int(batch)})
         return render_template('yearbook.html', students=students)
     else:
-        pass  # error page
-
+        return abort(404)
 
 @app.route('/testimonials/<roll_no>/')
 def testimonials_url(roll_no):
@@ -146,20 +151,18 @@ def testimonials_url(roll_no):
         student = yearbook.find_one({"roll_no": int(roll_no)})
         testimonial_array = []
         for id in student['testimonials']:
-            result = testimonials.find_one({'id': id})
-            print("id = ",  id)
+            result = testimonials.find_one({'_id': ObjectId(id) })
             with open('markdowns/' + str(id) + '.md', 'r') as y:
                 testimonial_array.append({
-                    "author_name": result['author_name'],
-                    "author_id": result['author_id'],
+                    # "author_name": result['author_name'],
+                    # "author_id": result['author_id'],
                     "markdown": y.read(),
-                    "date":result['datetime']
+                    "date": result['datetime']
                 })
-                print(y.read())
 
         return render_template('testimonials.html', testimonies=testimonial_array, student=student)
     else:
-        pass  # error page
+        return abort(404)
 
 
 @app.route('/add_testimonial/<roll_no>/', methods=['GET', 'POST'])
@@ -168,36 +171,31 @@ def add_testimonial(roll_no):
     print(roll_no)
     if roll_no_validation(roll_no):
         if request.method == 'GET':
-            print("yes")
             return render_template('add_testimonial.html', roll_no=roll_no)
         # rollno validate karna hai
         else:
-            # open total_count
-            with open('markdowns/total_count', 'r') as f:
-                count = f.read()
-                count = int(count)
-            id = count + 1
-            with open('markdowns/' + str(id) + '.md', 'w') as g:
-                g.write(request.form['text'])
-            with open('markdowns/total_count', 'w') as f:
-                f.write(str(id))
-
-            testimonials.insert_one({
-                "id": id,
-                "roll_no": roll_no,
+            result = testimonials.insert_one({
+                "roll_no": int(roll_no),
                 # "author_id": session['profile']['user_id'],
                 # "author_name": session['profile']['name'],
                 "datetime": datetime.now()
             })
-            print('gaya tha ')
-            yearbook.update_one({"roll_no": roll_no}, {"$push": {"testimonials": id}},upsert = True)
+            id = str(result.inserted_id)
 
+            with open('markdowns/' + str(id) + '.md', 'w') as g:
+                g.write(request.form['text'])
 
+            roll_no = int(roll_no)
+            yearbook.update({"roll_no": roll_no}, {"$push": {"testimonials": id}})
 
             return redirect(url_for('testimonials_url', roll_no=roll_no))
     else:
-        pass  # error page
+        return abort(404)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
 
 def roll_no_validation(roll_no):
     # check if roll no is an integer
@@ -223,9 +221,6 @@ def batch_validation(batch):
         return True
     else:
         return False
-
-
-
 
 
 if __name__ == '__main__':
