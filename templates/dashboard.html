@@ -1,62 +1,69 @@
 
 
 {% extends "layouts/unknownbase.html" %}
-{% block style%}
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
-    <link rel="stylesheet" href="/static/assets/css/main.css" />
-{%endblock%}
+{% block style %}
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <link rel="stylesheet" href="/static/assets/css/main.css"/>
+{% endblock %}
 {% block body %}
 
     <!-- Banner -->
-      <section id="banner">
+    <section id="banner">
         <div class="inner">
-          <img src="static/assets/img/matrix1.png"><br>
-          <h2 style = "font-weight: bold; color: red; display: inline;">M</h2><h3 style = "display: inline;">athematics</h3>
-          <h2 style = "font-weight: bold; color: red; display: inline;">&nbsp;A</h2><h3 style = "display: inline;">nd</h3>
-          <h2 style = "font-weight: bold; color: red; display: inline;">&nbsp;T</h2><h3 style = "display: inline;">echnology</h3>
-          <h2 style = "font-weight: bold; color: red; display: inline;">&nbsp;R</h2><h3 style = "display: inline;">each out for</h3>
-          <h2 style = "font-weight: bold; color: red; display: inline;">&nbsp;I</h2><h3 style = "display: inline;">ndustry&nbsp;E</h3>
-          <h2 style = "font-weight: bold; color: red; display: inline;">X</h2><h3 style = "display: inline;">change</h3>
-          <p style = "font-size: 22px;">The student body of <a href="https://www.iitg.ernet.in/maths/">Department of Mathematics, IIT Guwahati</a></p>
+            <img src="static/assets/img/matrix1.png"><br>
+            <h2 style="font-weight: bold; color: red; display: inline;">M</h2>
+            <h3 style="display: inline;">athematics</h3>
+            <h2 style="font-weight: bold; color: red; display: inline;">&nbsp;A</h2>
+            <h3 style="display: inline;">nd</h3>
+            <h2 style="font-weight: bold; color: red; display: inline;">&nbsp;T</h2>
+            <h3 style="display: inline;">echnology</h3>
+            <h2 style="font-weight: bold; color: red; display: inline;">&nbsp;R</h2>
+            <h3 style="display: inline;">each out for</h3>
+            <h2 style="font-weight: bold; color: red; display: inline;">&nbsp;I</h2>
+            <h3 style="display: inline;">ndustry&nbsp;E</h3>
+            <h2 style="font-weight: bold; color: red; display: inline;">X</h2>
+            <h3 style="display: inline;">change</h3>
+            <p style="font-size: 22px;">The student body of <a href="https://www.iitg.ernet.in/maths/">Department of
+                Mathematics, IIT Guwahati</a></p>
         </div>
         <video autoplay loop muted playsinline src="/static/images/banner.mp4"></video>
 
-      </section>
+    </section>
     <!-- Profile Welcome -->
     <div class="container">
-  <h2>Hi there!</h2>
-  <div class="card" style="width:400px">
-    <img class="card-img-top" src="{{userinfo['picture']}}" alt="Card image" style="width:100%">
-    <div class="card-body">
-      <h4 class="card-title">{{userinfo['name']}}</h4>
-      <p class="card-text">{{userinfo_pretty}}</p>
-      <a href="#" class="btn btn-primary">See Profile</a>
-    </div>
-  </div>
+        <h2>Hi there!</h2>
+        <div class="card" style="width:400px">
+            <img class="card-img-top" src="{{ userinfo['picture'] }}" alt="Card image" style="width:100%">
+            <div class="card-body">
+                <h4 class="card-title">{{ userinfo['name'] }}</h4>
+                <p class="card-text">{{ userinfo_pretty }}</p>
+                <a href="#" class="btn btn-primary">See Profile</a>
+            </div>
+        </div>
 
-    <a class="btn btn-primary btn-lg btn-logout btn-block" href="/logout">Logout</a>
+        <a class="btn btn-primary btn-lg btn-logout btn-block" href="/logout">Logout</a>
     </div>
 
     <!-- CTA -->
-      <section id="cta" class="wrapper">
+    <section id="cta" class="wrapper">
         <div class="inner">
-          <h2><a style = "text-decoration: none;" href="dimension">Dimension</a></h2>
-          <p> <a style = "text-decoration: none;" href="dimension">Click to see more.</a>
-          </p>
+            <h2><a style="text-decoration: none;" href="dimension">Dimension</a></h2>
+            <p><a style="text-decoration: none;" href="dimension">Click to see more.</a>
+            </p>
         </div>
-      </section>
+    </section>
 
 
 
     <!-- Scripts -->
-      <script src="/static/assets/js/jquery.min.js"></script>
-      <script src="/static/assets/js/browser.min.js"></script>
-      <script src="/static/assets/js/breakpoints.min.js"></script>
-      <script src="/static/assets/js/util.js"></script>
-      <script src="/static/assets/js/main.js"></script>
+    <script src="/static/assets/js/jquery.min.js"></script>
+    <script src="/static/assets/js/browser.min.js"></script>
+    <script src="/static/assets/js/breakpoints.min.js"></script>
+    <script src="/static/assets/js/util.js"></script>
+    <script src="/static/assets/js/main.js"></script>
 
 
 

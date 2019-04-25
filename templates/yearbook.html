@@ -1,332 +1,361 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <title>#codepenchallenge: Pokemon Figures</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>#codepenchallenge: Pokemon Figures</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-  
-{#      <link rel="stylesheet" href="css/style.css">#}
+
+    {#      <link rel="stylesheet" href="css/style.css">#}
     <style>
         @import url("https://fonts.googleapis.com/css?family=Open+Sans|Open+Sans+Condensed:300,700");
+
         body {
-          font-family: "Open Sans", Helvetica, sans-serif;
-          text-align: center;
-          margin: 20px;
+            font-family: "Open Sans", Helvetica, sans-serif;
+            text-align: center;
+            margin: 20px;
         }
 
         img {
-          max-height: 150px;
-          margin: auto;
-          display: inline-block;
+            max-height: 150px;
+            margin: auto;
+            display: inline-block;
         }
 
         h1, h2, h3, h4, h5 {
-          margin: 0;
-          font-weight: 400;
+            margin: 0;
+            font-weight: 400;
         }
 
         .card {
-          display: inline-block;
-          width: 300px;
-          padding: 1em;
-          border-radius: 15px;
-          margin: 10px;
-          background: #ddd;
-          text-align: left;
-          box-shadow: 0px 5px 20px -10px #111111;
-          position: relative;
-          transition: 0.4s;
-        }
-        .card__caption {
-          background-color: rgba(255, 255, 255, 0.65);
-          padding: 1em;
-          position: relative;
-          border-radius: 0 0 3px 3px;
-        }
-        .card__image-container {
-          background-color: rgba(0, 0, 0, 0.7);
-          text-align: center;
-          padding: 1em 1em 0;
-          border-radius: 3px 3px 0 0;
-        }
-        .card__type {
-          position: absolute;
-          top: 0;
-          right: 1em;
-          -webkit-transform: translateY(-50%);
-                  transform: translateY(-50%);
-          color: #ffffff;
-          text-transform: uppercase;
-          font-family: "Open Sans Condensed", "Open Sans", helvetica, sans-serif;
-          letter-spacing: 0.1em;
-          padding: 0.25em;
-          line-height: 1;
-          border-radius: 2px;
-          background: #bbbbbb;
-        }
-        .card__label {
-          font-size: 10px;
-          text-transform: uppercase;
-          font-weight: 400;
-          display: block;
-          margin-bottom: 3px;
-        }
-        .card__name {
-          font-family: "Open Sans Condensed", "Open Sans", helvetica, sans-serif;
-          text-align: center;
-          font-size: 1.5em;
-          font-weight: 700;
-          letter-spacing: 0.02em;
-        }
-        .card__stats {
-          margin: 1em 0;
-          width: 100%;
-        }
-        .card__stats th {
-          font-family: "Open Sans Condensed", "Open Sans", helvetica, sans-serif;
-          text-align: right;
-          font-weight: 300;
-        }
-        .card__stats th, .card__stats td {
-          width: 50%;
-          padding: 0.25em 0.5em 0;
-        }
-        .card__abilities {
-          display: flex;
-          justify-content: space-between;
-        }
-        .card__ability {
-          margin-top: 1em;
-          flex: 1 0;
-        }
-        .card--normal {
-          background: linear-gradient(110deg, #FDBB2D 0%, #3A1C71 100%);
-          box-shadow: 0px 5px 20px -10px #3A1C71;
-        }
-        .card--normal .card__type {
-          background-color: #C08A53;
-        }
-        .card--water {
-          background: linear-gradient(120deg, #1CB5E0 0%, #000851 100%);
-          box-shadow: 0px 5px 20px -10px #000851;
-        }
-        .card--water .card__type {
-          background-color: #1CB5E0;
-        }
-        .card--electric {
-          background: linear-gradient(90deg, #ffde00 34%, #e8ff99 83%);
-        }
-        .card--electric .card__type {
-          background-color: #000;
-        }
-        .card--fire {
-          background: linear-gradient(0deg, #c71800 10%, #fcc245 100%);
-        }
-        .card--fire .card__type {
-          background-color: #c71800;
-        }
-        .card--psychic {
-          background: linear-gradient(140deg, #ffa7f9 0%, #ff2cc3 39%, #ffe3a7 100%);
-        }
-        .card--psychic .card__type {
-          background: #ff2cc3;
-        }
-        .card--dark {
-          background: linear-gradient(20deg, #191919 0%, #100b32 33%, #5c0249 100%);
-        }
-        .card--dark .card__type {
-          background: #5c0249;
-        }
-        .card--grass {
-          background: linear-gradient(140deg, #c4da3d 0%, #6e7f0e 69%, #275009 100%);
-        }
-        .card--grass .card__type {
-          background: #6e7f0e;
-        }
-        .card--ice {
-          background: linear-gradient(230deg, #caeaf6 0%, #a0eaf1 46%, #6fb8eb 100%);
-        }
-        .card--ice .card__type {
-          background: #6fb8eb;
-        }
-        .card--fairy {
-          background: linear-gradient(45deg, #ffe6f0 0%, #ffc5e0 34%, #ffa6b9 71%, #ff8a95 100%);
-        }
-        .card--fairy .card__type {
-          background: #ff8a95;
-        }
-        .card:hover {
-          z-index: 5;
-          box-shadow: 0px 13px 30px -15px #000000;
-          -webkit-transform: translateY(-10px);
-                  transform: translateY(-10px);
+            display: inline-block;
+            width: 300px;
+            padding: 1em;
+            border-radius: 15px;
+            margin: 10px;
+            background: #ddd;
+            text-align: left;
+            box-shadow: 0px 5px 20px -10px #111111;
+            position: relative;
+            transition: 0.4s;
         }
 
-{#        {% for student in students %}#}
-{#            .card:nth-child({{ loop.index }}){#}
-{#                -webkit-transform: translateY(0px) rotate({{ range(-4,4)|random }}deg);#}
-{#                  transform: translateY(0px) rotate({{ range(-4,4)|random }}deg);#}
-{#            }#}
-{#        {% endfor %}#}
+        .card__caption {
+            background-color: rgba(255, 255, 255, 0.65);
+            padding: 1em;
+            position: relative;
+            border-radius: 0 0 3px 3px;
+        }
+
+        .card__image-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            text-align: center;
+            padding: 1em 1em 0;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .card__type {
+            position: absolute;
+            top: 0;
+            right: 1em;
+            -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+            color: #ffffff;
+            text-transform: uppercase;
+            font-family: "Open Sans Condensed", "Open Sans", helvetica, sans-serif;
+            letter-spacing: 0.1em;
+            padding: 0.25em;
+            line-height: 1;
+            border-radius: 2px;
+            background: #bbbbbb;
+        }
+
+        .card__label {
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 400;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .card__name {
+            font-family: "Open Sans Condensed", "Open Sans", helvetica, sans-serif;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .card__stats {
+            margin: 1em 0;
+            width: 100%;
+        }
+
+        .card__stats th {
+            font-family: "Open Sans Condensed", "Open Sans", helvetica, sans-serif;
+            text-align: right;
+            font-weight: 300;
+        }
+
+        .card__stats th, .card__stats td {
+            width: 50%;
+            padding: 0.25em 0.5em 0;
+        }
+
+        .card__abilities {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .card__ability {
+            margin-top: 1em;
+            flex: 1 0;
+        }
+
+        .card--normal {
+            background: linear-gradient(110deg, #FDBB2D 0%, #3A1C71 100%);
+            box-shadow: 0px 5px 20px -10px #3A1C71;
+        }
+
+        .card--normal .card__type {
+            background-color: #C08A53;
+        }
+
+        .card--water {
+            background: linear-gradient(120deg, #1CB5E0 0%, #000851 100%);
+            box-shadow: 0px 5px 20px -10px #000851;
+        }
+
+        .card--water .card__type {
+            background-color: #1CB5E0;
+        }
+
+        .card--electric {
+            background: linear-gradient(90deg, #ffde00 34%, #e8ff99 83%);
+        }
+
+        .card--electric .card__type {
+            background-color: #000;
+        }
+
+        .card--fire {
+            background: linear-gradient(0deg, #c71800 10%, #fcc245 100%);
+        }
+
+        .card--fire .card__type {
+            background-color: #c71800;
+        }
+
+        .card--psychic {
+            background: linear-gradient(140deg, #ffa7f9 0%, #ff2cc3 39%, #ffe3a7 100%);
+        }
+
+        .card--psychic .card__type {
+            background: #ff2cc3;
+        }
+
+        .card--dark {
+            background: linear-gradient(20deg, #191919 0%, #100b32 33%, #5c0249 100%);
+        }
+
+        .card--dark .card__type {
+            background: #5c0249;
+        }
+
+        .card--grass {
+            background: linear-gradient(140deg, #c4da3d 0%, #6e7f0e 69%, #275009 100%);
+        }
+
+        .card--grass .card__type {
+            background: #6e7f0e;
+        }
+
+        .card--ice {
+            background: linear-gradient(230deg, #caeaf6 0%, #a0eaf1 46%, #6fb8eb 100%);
+        }
+
+        .card--ice .card__type {
+            background: #6fb8eb;
+        }
+
+        .card--fairy {
+            background: linear-gradient(45deg, #ffe6f0 0%, #ffc5e0 34%, #ffa6b9 71%, #ff8a95 100%);
+        }
+
+        .card--fairy .card__type {
+            background: #ff8a95;
+        }
+
+        .card:hover {
+            z-index: 5;
+            box-shadow: 0px 13px 30px -15px #000000;
+            -webkit-transform: translateY(-10px);
+            transform: translateY(-10px);
+        }
+
+        {#        {% for student in students %}#}
+        {#            .card:nth-child({{ loop.index }}){#}
+        {#                -webkit-transform: translateY(0px) rotate({{ range(-4,4)|random }}deg);#}
+        {#                  transform: translateY(0px) rotate({{ range(-4,4)|random }}deg);#}
+        {#            }#}
+        {#        {% endfor %}#}
 
 
     </style>
-  
+
 </head>
 {% set styles = ['normal','grass','psychic','water','fire','fairy','ice','dark','electric'] %}
 <body>
 
-  <div id="cards">
-  {% for student in students %}
+<div id="cards">
+    {% for student in students %}
 
-<figure class="card card--{{ styles|random }}">
-<a href="/testimonials/{{ student['roll_no'] }}" class="stretched-link"></a>
-  <div class="card__image-container">
-    <img src="{{ student['image'] }}" alt="{{ student['name'] }}" class="card__image">
-  </div>
-  
-  <figcaption class="card__caption">
-    <h1 class="card__name">{{ student['name'] }}</h1>
+        <figure class="card card--{{ styles|random }}">
+            <a href="/testimonials/{{ student['roll_no'] }}" class="stretched-link"></a>
+            <div class="card__image-container">
+                <img src="{{ student['image'] }}" alt="{{ student['name'] }}" class="card__image">
+            </div>
 
-      {% if student['titles'][0] is defined %}
-    <h3 class="card__type">
-      {{ student['titles'][0] }}
-    </h3>
-      {% else %}
-    <h3 class="card__type">
-      Machau
-    </h3>
-      {% endif %}
+            <figcaption class="card__caption">
+                <h1 class="card__name">{{ student['name'] }}</h1>
 
-    <table class="card__stats">
-      <tbody><tr>
-        <th>Roll no</th>
-        <td>{{ student['roll_no'] }}</td>
-      </tr>
-      <tr>
-        <th># Testimonials</th>
-        <td>{{ (student['testimonials'])|length }}</td>
-      </tr>
-      <tr>
-      <th>Maggu</th>
-        <td>{{  range(30,200)|random }}</td>
-      </tr>
-      <tr>
-        <th>Bondapa</th>
-        <td>{{ range(30,200)|random }}</td>
-      </tr>
-      <tr>
-        <th>Machau</th>
-        <td>{{   range(30,200)|random }}</td>
-      </tr>
+                {% if student['titles'][0] is defined %}
+                    <h3 class="card__type">
+                        {{ student['titles'][0] }}
+                    </h3>
+                {% else %}
+                    <h3 class="card__type">
+                        Machau
+                    </h3>
+                {% endif %}
 
-      <tr>
-        <th>Ghissu</th>
-        <td>{{  range(30,200)|random }}</td>
-      </tr>
-      <tr>
-        <th>Dassu</th>
-        <td>{{  range(30,200)|random }}</td>
-      </tr>
-      <tr>
-        <th>Bakchod</th>
-        <td>{{ range(100,200)|random }}</td>
-      </tr>
-    </tbody></table>
-    
-{#    <div class="card__abilities">#}
-{#      <h4 class="card__ability">#}
-{#        <span class="card__label">Ability</span>#}
-{#        Run Away#}
-{#      </h4>#}
-{#      <h4 class="card__ability">#}
-{#        <span class="card__label">Hidden Ability</span>#}
-{#        Anticipation#}
-{#      </h4>#}
-{#    </div>#}
-  </figcaption>
-</figure>
-       <style>
-          .card:nth-child({{ loop.index }}){
+                <table class="card__stats">
+                    <tbody>
+                    <tr>
+                        <th>Roll no</th>
+                        <td>{{ student['roll_no'] }}</td>
+                    </tr>
+                    <tr>
+                        <th># Testimonials</th>
+                        <td>{{ (student['testimonials'])|length }}</td>
+                    </tr>
+                    <tr>
+                        <th>Maggu</th>
+                        <td>{{ range(30,200)|random }}</td>
+                    </tr>
+                    <tr>
+                        <th>Bondapa</th>
+                        <td>{{ range(30,200)|random }}</td>
+                    </tr>
+                    <tr>
+                        <th>Machau</th>
+                        <td>{{ range(30,200)|random }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Ghissu</th>
+                        <td>{{ range(30,200)|random }}</td>
+                    </tr>
+                    <tr>
+                        <th>Dassu</th>
+                        <td>{{ range(30,200)|random }}</td>
+                    </tr>
+                    <tr>
+                        <th>Bakchod</th>
+                        <td>{{ range(100,200)|random }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                {#    <div class="card__abilities">#}
+                {#      <h4 class="card__ability">#}
+                {#        <span class="card__label">Ability</span>#}
+                {#        Run Away#}
+                {#      </h4>#}
+                {#      <h4 class="card__ability">#}
+                {#        <span class="card__label">Hidden Ability</span>#}
+                {#        Anticipation#}
+                {#      </h4>#}
+                {#    </div>#}
+            </figcaption>
+        </figure>
+        <style>
+            .card:nth-child({{ loop.index }}) {
                 -webkit-transform: translateY(0px) rotate({{ range(-4,4)|random }}deg);
-                  transform: translateY(0px) rotate({{ range(-4,4)|random }}deg);
+                transform: translateY(0px) rotate({{ range(-4,4)|random }}deg);
             }
-      </style>
-  {% endfor %}
+        </style>
+    {% endfor %}
 
 
 </div>
 
 
 <script id="card-template" type="text/x-handlebars-template">
-<figure class="card card--{{type}}">
-  <div class="card__image-container">
-    <img src="{{imageAddress}}" alt="{{name}}" class="card__image">
-  </div>
+    <figure class="card card--{{ type }}">
+        <div class="card__image-container">
+            <img src="{{ imageAddress }}" alt="{{ name }}" class="card__image">
+        </div>
 
-  <figcaption class="card__caption">
-    <h1 class="card__name">{{name}}</h1>
+        <figcaption class="card__caption">
+            <h1 class="card__name">{{ name }}</h1>
 
-    <h3 class="card__type">e
-      {{type}}
-    </h3>
+            <h3 class="card__type">e
+                {{ type }}
+            </h3>
 
-    <table class="card__stats">
-      <tr>
-        <th>HP</th>
-        <td>{{hp}}</td>
-      </tr>
-      <tr>
-        <th>Attack</th>
-        <td>{{attack}}</td>
-      </tr>
+            <table class="card__stats">
+                <tr>
+                    <th>HP</th>
+                    <td>{{ hp }}</td>
+                </tr>
+                <tr>
+                    <th>Attack</th>
+                    <td>{{ attack }}</td>
+                </tr>
 
-      <tr>
-        <th>Defense</th>
-        <td>{{defense}}</td>
-      </tr>
+                <tr>
+                    <th>Defense</th>
+                    <td>{{ defense }}</td>
+                </tr>
 
-      <tr>
-        <th>Special Attack</th>
-        <td>{{spAttack}}</td>
-      </tr>
-      <tr>
-        <th>Special Defense</th>
-        <td>{{spDefense}}</td>
-      </tr>
-      <tr>
-        <th>Speed</th>
-        <td>{{speed}}</td>
-      </tr>
-    </table>
+                <tr>
+                    <th>Special Attack</th>
+                    <td>{{ spAttack }}</td>
+                </tr>
+                <tr>
+                    <th>Special Defense</th>
+                    <td>{{ spDefense }}</td>
+                </tr>
+                <tr>
+                    <th>Speed</th>
+                    <td>{{ speed }}</td>
+                </tr>
+            </table>
 
-    <div class="card__abilities">
-      <h4 class="card__ability">
-        <span class="card__label">Ability</span>
-        {{ability1}}
-      </h4>
-      <h4 class="card__ability">
-        <span class="card__label">Hidden Ability</span>
-        {{ability2}}
-      </h4>
-    </div>
-  </figcaption>
-</figure>
+            <div class="card__abilities">
+                <h4 class="card__ability">
+                    <span class="card__label">Ability</span>
+                    {{ ability1 }}
+                </h4>
+                <h4 class="card__ability">
+                    <span class="card__label">Hidden Ability</span>
+                    {{ ability2 }}
+                </h4>
+            </div>
+        </figcaption>
+    </figure>
 </script>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js'></script>
 
-  
 
 {#    <script  src="js/index.js"></script>#}
-
-
 
 
 </body>

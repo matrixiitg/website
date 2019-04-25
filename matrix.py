@@ -83,16 +83,17 @@ def verification():
         if profiles.count_documents({'user_id': user_id}):
             redirect(url_for('dashboard'))
         else:
-            return render_template('verification.html')
+            return render_template('verification.html') ##TODO
     else:
         # Validate the request parameters and then send to team for review
         # Validation of roll_no regex match | Batch year
-        pass
+        pass ##TODO
 
 
 @app.route('/update_profile/', methods=['GET', 'POST'])
 def update_profile():
     pass
+    ##TODO
 
 
 @app.route('/callback/')
