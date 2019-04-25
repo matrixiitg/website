@@ -1,7 +1,6 @@
 import json
 from os import urandom, environ as env
 
-from flask_misaka import Misaka
 from werkzeug.exceptions import HTTPException
 from functools import wraps
 from dotenv import load_dotenv, find_dotenv
