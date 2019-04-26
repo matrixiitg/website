@@ -11,6 +11,7 @@ from pymongo import MongoClient
 from datetime import datetime
 from flaskext.markdown import Markdown
 from bson.objectid import ObjectId
+import re
 
 app = Flask(__name__)
 # Misaka(app)
@@ -78,15 +79,32 @@ def team():
 @app.route('/verify/', methods=['GET', 'POST'])
 def verification():
     if request.method == 'GET':
-        user_id = session['profile']['user_id']
-        if profiles.count_documents({'user_id': user_id}):
-            redirect(url_for('dashboard'))
+        try:
+             user_id = session['profile']['user_id']
+             print(user_id)
+        except:
+            # return render_template('verification.html')
+            return abort(404)
+        if profiles.count_documents({'id': user_id}):
+            return redirect(url_for('dashboard'))
         else:
-            return render_template('verification.html') ##TODO
+            return render_template('verification.html')
     else:
         # Validate the request parameters and then send to team for review
         # Validation of roll_no regex match | Batch year
-        pass ##TODO
+        roll_no = request.form['roll_no']
+        batch = request.form['batch']
+        if re.match(r'^[0-9][0-9][0-2]1230[0-9][0-9]$', str(roll_no)) and re.match(r'^20[0-9][0-9]$', str(batch)):
+            profiles.insert_one({
+                "roll_no": int(request.form['roll_no']),
+                "id": session['profile']['user_id'],
+                "name": session['profile']['name'],
+                "batch" : int(request.form['batch'])
+            })
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Enter Correct information')
+            return render_template('verification.html')
 
 
 @app.route('/update_profile/', methods=['GET', 'POST'])
@@ -115,7 +133,7 @@ def callback_handling():
 
 @app.route('/login')
 def login():
-    return auth0.authorize_redirect(redirect_uri="http://127.0.0.1:5000/callback/",
+    return auth0.authorize_redirect(redirect_uri="http://172.16.68.63:5000/callback/",
                                     audience='https://matrix-iitg.auth0.com/userinfo')
 
 
@@ -137,14 +155,16 @@ def logout():
 
 
 @app.route('/yearbook/<batch>/')
+@requires_auth
 def yearbook_url(batch):
     if batch_validation(batch):
         students = yearbook.find({"batch": int(batch)})
-        return render_template('yearbook.html', students=students)
+        return render_template('yearbook.html', students=students, batch = batch)
     else:
         return abort(404)
 
 @app.route('/testimonials/<roll_no>/')
+@requires_auth
 def testimonials_url(roll_no):
     # fetch testimonials
     if roll_no_validation(roll_no):
@@ -154,8 +174,8 @@ def testimonials_url(roll_no):
             result = testimonials.find_one({'_id': ObjectId(id) })
             with open('markdowns/' + str(id) + '.md', 'r') as y:
                 testimonial_array.append({
-                    # "author_name": result['author_name'],
-                    # "author_id": result['author_id'],
+                    "author_name": result['author_name'],
+                    "author_id": result['author_id'],
                     "markdown": y.read(),
                     "date": result['datetime']
                 })
@@ -166,6 +186,7 @@ def testimonials_url(roll_no):
 
 
 @app.route('/add_testimonial/<roll_no>/', methods=['GET', 'POST'])
+@requires_auth
 def add_testimonial(roll_no):
     # print(request.form['text'])
     print(roll_no)
@@ -176,8 +197,8 @@ def add_testimonial(roll_no):
         else:
             result = testimonials.insert_one({
                 "roll_no": int(roll_no),
-                # "author_id": session['profile']['user_id'],
-                # "author_name": session['profile']['name'],
+                "author_id": session['profile']['user_id'],
+                "author_name": session['profile']['name'],
                 "datetime": datetime.now()
             })
             id = str(result.inserted_id)
@@ -224,4 +245,4 @@ def batch_validation(batch):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host = '0.0.0.0', debug=True)
