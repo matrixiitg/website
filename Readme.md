@@ -1,7 +1,9 @@
 # Steps to run mock site locally
 1. Install requirements:
+```
 sudo -H pip3 install -r requirements.txt [If installing on python global environment]
 pip3 install -r requirements.txt [If in virtual environment]
+```
 
 2. Install MongoDB
 Follow steps at https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
