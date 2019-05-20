@@ -175,6 +175,8 @@ def dashboard():
     return render_template('dashboard.html',
                            userinfo=session['profile'],
                            userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
+
+
 ## TODO: HTML page banana h
 
 
@@ -209,13 +211,13 @@ def testimonials_url(roll_no):
     if roll_no_validation(roll_no):
         # Finding student record in yearbook collection using roll_no
         student = yearbook.find_one({"roll_no": int(roll_no)})
-        testimonial_array = [] # Empty Array
-        for id in student['testimonials']:
+        testimonial_array = []  # Empty Array
+        for testimonial_id in student['testimonials']:
             # Search testimonial id in testimonials collection
             # Append the markdown file content and fetched information to the empty array we declared above
-            result = testimonials.find_one({'_id': ObjectId(id)})
+            result = testimonials.find_one({'_id': ObjectId(testimonial_id)})
             # Opening markdown file
-            with open('markdowns/' + str(id) + '.md', 'r') as md:
+            with open('markdowns/' + str(testimonial_id) + '.md', 'r') as md:
                 testimonial_array.append({
                     "author_name": result['author_name'],
                     "author_id": result['author_id'],
@@ -224,6 +226,7 @@ def testimonials_url(roll_no):
                 })
 
         return render_template('testimonials.html', testimonies=testimonial_array, student=student)
+        ## TODO: Change markdown renderer from markdown lib filter to javascript marked.js as used in add_testimonials
     else:
         return abort(404)
 
@@ -257,8 +260,10 @@ def add_testimonial(roll_no):
             yearbook.update({"roll_no": roll_no}, {"$push": {"testimonials": testimonial_id}})
             # Redirect to that person's testimonials
             return redirect(url_for('testimonials_url', roll_no=roll_no))
+            ## TODO: Fix HTML Page UI & Give decent tutorial on how to use markdown
     else:
         return abort(404)
+
 
 # 404 error handler - abort(404) redirects us here
 @app.errorhandler(404)
@@ -296,6 +301,7 @@ def batch_validation(batch):
         return True
     else:
         return False
+
 
 # Turn debug =  False in production
 if __name__ == '__main__':
