@@ -1,8 +1,17 @@
 # Steps to run mock site locally
+0. Clone/Pull repository
+```
+git clone https://github.com/matrixiitg/website.git
+[First time]
+git pull origin {branch_name: dev/master}
+[Get new changes]
+```
 1. Install requirements:
 ```
-sudo -H pip3 install -r requirements.txt [If installing on python global environment]
-pip3 install -r requirements.txt [If in virtual environment]
+sudo -H pip3 install -r requirements.txt
+[If installing on python global environment]
+pip3 install -r requirements.txt
+[If in virtual environment]
 ```
 
 2. Install MongoDB
